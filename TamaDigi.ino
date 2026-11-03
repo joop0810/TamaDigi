@@ -40,7 +40,7 @@
 
 // Version del firmware. Subir este numero en cada release (y manifest.json para
 // el instalador web). Se muestra en la pantalla de ajustes y por serie al arrancar.
-#define FW_VERSION "1.0.0"
+#define FW_VERSION "1.0.1"
 
 Arduino_DataBus *bus = new Arduino_ESP32QSPI(
   LCD_CS, LCD_SCLK, LCD_SDIO0, LCD_SDIO1, LCD_SDIO2, LCD_SDIO3);
@@ -1328,7 +1328,13 @@ void updateBrightness(uint32_t now) {
   if (pet.evolving() || pet.ceremony || pet.eating() || pet.showHeart()) {
     lastInteract = now;
   }
-  uint32_t idle = now - lastInteract;
+  // `now` is taken at the top of loop(), and a tap handled later in the same
+  // pass sets lastInteract a few ms AFTER it. The plain difference then wrapped
+  // to ~49 days, dimStage jumped to 2 and the panel dropped to brightness 8 --
+  // near black -- right after a tap, which is every turn of a fight. Found on
+  // TamaPoke through its diagnostics log (BRIGHT -> 8 then -> 180 straight
+  // away); the bug came with the engine. A touch "in the future" is a touch now.
+  uint32_t idle = (int32_t)(now - lastInteract) > 0 ? now - lastInteract : 0;
   dimStage = (idle > 300000) ? 2 : (idle > 90000) ? 1 : 0;
   const uint8_t base = brightBase(gBrightLevel, usbPresent());
   uint8_t target = pet.sleeping ? 25 : base;

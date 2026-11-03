@@ -1,6 +1,6 @@
 # TamaDigi
 
-![Firmware](https://img.shields.io/badge/firmware-v1.0.0-8A2BE2) ![Board](https://img.shields.io/badge/board-ESP32--S3%20round%20AMOLED-E7352C) ![Code](https://img.shields.io/badge/code-MIT-blue)
+![Firmware](https://img.shields.io/badge/firmware-v1.0.1-8A2BE2) ![Board](https://img.shields.io/badge/board-ESP32--S3%20round%20AMOLED-E7352C) ![Code](https://img.shields.io/badge/code-MIT-blue)
 
 Ein **Digimon-V-Pet** für das **Waveshare ESP32-S3-Touch-AMOLED-1.75**: rundes 466×466-AMOLED, Touch, Akku, Lautsprecher.
 Du ziehst ein Digimon aus dem **Digi-Ei** groß. Wie gut du es pflegst und trainierst und wie viele Kämpfe es gewinnt, entscheidet, **zu welchem Digimon es digitiert**.

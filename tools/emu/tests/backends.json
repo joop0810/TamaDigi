@@ -34,6 +34,7 @@
     "audio_test": "Resumable audio task with host queue and I2S doubles; board codec not modeled",
     "box_test": "Injected partial/refused NVS writes for atomic party/box tests",
     "console_test": "Synthetic serial input and restart interception in the real sketch",
+    "dimflash_test": "Calls the sketch's updateBrightness() with a touch stamped after loop()'s clock read",
     "explore_test": "Real Explore UI with synthetic touch, sprites and framebuffer",
     "flush_test": "Host frameReady and synthetic renderer/loop controls",
     "focus_test": "Real focus UI plus injected NVS failures and synthetic touch",
