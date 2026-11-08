@@ -3,7 +3,8 @@
 
 // Idiomas soportados. La fuente del firmware no tiene acentos: ambos textos van
 // sin tildes ni enes (igual que ya iba el espanol).
-enum Lang : uint8_t { LANG_ES = 0, LANG_EN, LANG_FR, LANG_DE, LANG_IT, LANG_PT, LANG_COUNT };
+enum Lang : uint8_t { LANG_ES = 0, LANG_EN, LANG_FR, LANG_DE, LANG_IT, LANG_PT, LANG_ZH, LANG_COUNT };
+// LANG_ZH is appended, never inserted: the language is stored in NVS as this index.
 #define LANG_DEFAULT LANG_EN  // idioma por defecto: ingles
 
 extern Lang gLang;  // idioma activo (definido en i18n.cpp)
@@ -178,10 +179,27 @@ enum StrId : uint8_t {
   S_TRAIN_TOTAL_FMT,  // "Training: %u" -- trAtk + trDef + trSpe
   S_ATTR,             // card label: Vaccine / Data / Virus / Free
   S_STAGE_0, S_STAGE_1, S_STAGE_2, S_STAGE_3, S_STAGE_4, S_STAGE_5,
+  S_TAP_MORE,         // under a battle message: tap for the next one
   STR_COUNT
 };
 
 const char *T(StrId id);       // texto en el idioma activo
+
+// --- Chinese ---------------------------------------------------------------
+// The data names (Digimon, items, elements, areas, avatars) are English in the
+// six Latin-script languages. L() is the one place that swaps one for its
+// Chinese name when LANG_ZH is active; anything it does not know (a nickname,
+// a string that is already translated) comes back unchanged.
+const char *L(const char *english);
+// Display width in columns of the 6 px bitmap font: ASCII is one, a CJK
+// character two. Every "centre this text" calculation asks this, not strlen():
+// a Chinese character is three bytes of UTF-8 but two columns wide.
+int tcols(const char *s);
+// The 12x12 glyph for a code point, or nullptr if the font has none.
+#ifndef CJK_CELL
+#define CJK_CELL 12   // also emitted by tools/gen_zh.py into cjk_font.h
+#endif
+const uint8_t *cjkGlyph(uint32_t cp);
 const char *moveName(uint8_t move);  // localized display name; move ID stays stable
 const char *medalName(int i);  // banner de medalla (MED_COUNT)
 const char *medalLabel(int i); // etiqueta corta de medalla

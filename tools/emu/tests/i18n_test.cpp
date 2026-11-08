@@ -24,7 +24,10 @@ void sfxPlay(uint8_t) {}
 #include <cstring>
 
 // STRINGS is file-static, so go through the same accessor the firmware uses.
-static const char *LANG[] = { "ES", "EN", "FR", "DE", "IT", "PT" };
+static const char *LANG[LANG_COUNT] = { "ES", "EN", "FR", "DE", "IT", "PT", "ZH" };
+// Chinese is the one language allowed past ASCII (its own CJK font draws it;
+// zh_test checks every character has a glyph). The other six stay ASCII.
+static bool mayBeNonAscii(int l) { return l == LANG_ZH; }
 
 int main() {
   int bad = 0;
@@ -33,8 +36,9 @@ int main() {
       setLang((Lang)l);
       const char *v = T((StrId)s);
       if (!v) { printf("NULL  %s index %d\n", LANG[l], s); bad++; continue; }
-      for (const unsigned char *p = (const unsigned char *)v; *p; p++)
-        if (*p > 0x7F) { printf("NON-ASCII  %s index %d: \"%s\"\n", LANG[l], s, v); bad++; break; }
+      if (!mayBeNonAscii(l))
+        for (const unsigned char *p = (const unsigned char *)v; *p; p++)
+          if (*p > 0x7F) { printf("NON-ASCII  %s index %d: \"%s\"\n", LANG[l], s, v); bad++; break; }
     }
   for (int l = 0; l < LANG_COUNT; l++) {
     int translated = 0;
@@ -42,10 +46,11 @@ int main() {
     for (int move = 0; move < MOVE_COUNT; move++) {
       const char *value = moveName((uint8_t)move);
       if (!value) { printf("NULL MOVE  %s index %d\n", LANG[l], move); bad++; continue; }
-      for (const unsigned char *p = (const unsigned char *)value; *p; p++)
-        if (*p > 0x7F) { printf("NON-ASCII MOVE  %s index %d: \"%s\"\n", LANG[l], move, value); bad++; break; }
+      if (!mayBeNonAscii(l))
+        for (const unsigned char *p = (const unsigned char *)value; *p; p++)
+          if (*p > 0x7F) { printf("NON-ASCII MOVE  %s index %d: \"%s\"\n", LANG[l], move, value); bad++; break; }
       if (move && strcmp(value, MOVE_TBL[move].name)) translated++;
-      if (strlen(value) > 23) { printf("LONG MOVE  %s index %d: \"%s\"\n", LANG[l], move, value); bad++; }
+      if (tcols(value) > 23) { printf("LONG MOVE  %s index %d: \"%s\"\n", LANG[l], move, value); bad++; }
     }
     // EN may differ from the internal <=12-char key: a signature attack shows
     // its full name ("PEPPER BREATH" for PEPPER BRTH). Other languages must
@@ -53,7 +58,7 @@ int main() {
     if (l != LANG_EN && !translated) { printf("%s move table silently fell back to English\n", LANG[l]); bad++; }
   }
   static const char *EMBER[LANG_COUNT] = {
-    "PLACAJE", "TACKLE", "CHARGE", "TACKLE", "AZIONE", "INVESTIDA"
+    "PLACAJE", "TACKLE", "CHARGE", "TACKLE", "AZIONE", "INVESTIDA", "撞击"
   };
   for (int l = 0; l < LANG_COUNT; l++) {
     setLang((Lang)l);

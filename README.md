@@ -1,6 +1,6 @@
 # TamaDigi
 
-![Firmware](https://img.shields.io/badge/firmware-v1.0.1-8A2BE2) ![Board](https://img.shields.io/badge/board-ESP32--S3%20round%20AMOLED-E7352C) ![Code](https://img.shields.io/badge/code-MIT-blue)
+![Firmware](https://img.shields.io/badge/firmware-v1.1.0-8A2BE2) ![Board](https://img.shields.io/badge/board-ESP32--S3%20round%20AMOLED-E7352C) ![Code](https://img.shields.io/badge/code-MIT-blue)
 
 Ein **Digimon-V-Pet** für das **Waveshare ESP32-S3-Touch-AMOLED-1.75**: rundes 466×466-AMOLED, Touch, Akku, Lautsprecher.
 Du ziehst ein Digimon aus dem **Digi-Ei** groß. Wie gut du es pflegst und trainierst und wie viele Kämpfe es gewinnt, entscheidet, **zu welchem Digimon es digitiert**.
@@ -159,7 +159,7 @@ Die fertigen Packs liegen schon in `web/sprites-ver1.pak` … `ver5.pak`. Du mus
 - **Name antippen** = Menü (Beutel, Einstellungen, Verabschieden); **Digimon antippen** = streicheln; **3 s halten** = freilassen
 - **Nachts** (0–6 Uhr, Bildschirm aus) schläft dein Digimon von selbst, damit es nicht über Nacht wegläuft. Dafür muss die Uhrzeit in den Einstellungen gestellt sein.
 - **PWR kurz** = Bildschirm an/aus, **lang (4 s)** = ausschalten (die Uhr läuft weiter, dein Digimon altert also auch ausgeschaltet)
-- Sprache: Englisch (Standard), **Deutsch**, Spanisch, Französisch, Italienisch, Portugiesisch – in den Einstellungen
+- Sprache: Englisch (Standard), **Deutsch**, Spanisch, Französisch, Italienisch, Portugiesisch, **Chinesisch (vereinfacht)** – in den Einstellungen. Auf Chinesisch sind auch alle Digimon, Attacken, Items und Gebiete übersetzt (ohne Korrekturlesung durch Muttersprachler)
 
 ## Am PC ausprobieren: Emulator
 

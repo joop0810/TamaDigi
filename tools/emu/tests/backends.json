@@ -50,6 +50,7 @@
     "touch_test": "Synthetic touch IRQ, framebuffer and NVS handle-failure regression",
     "transfer_test": "Host transfer-mode, sprites and deterministic loop clock controls",
     "view_test": "Synthetic real-screen rendering, touch and framebuffer inspection",
-    "workflow_test": "Integrated real sketch/audio with host task scheduling, gestures and fork/exec reboot"
+    "workflow_test": "Integrated real sketch/audio with host task scheduling, gestures and fork/exec reboot",
+    "zh_test": "Real string tables, L(), tcols() and the sketch's TextCanvas drawing into the host framebuffer"
   }
 }

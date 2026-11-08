@@ -11,8 +11,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
 import digimon_data as D
+import zh_names as ZH
 
-LANGS = ['ES', 'EN', 'FR', 'DE', 'IT', 'PT']   # must match the firmware's Lang enum
+LANGS = ['ES', 'EN', 'FR', 'DE', 'IT', 'PT', 'ZH']   # must match the firmware's Lang enum
 
 
 def ident(name):
@@ -21,10 +22,13 @@ def ident(name):
 
 
 def localized(m):
+    """One name per LANGS entry. The six Latin-script languages come from
+    digimon_data.py; Chinese from zh_names.py, and every attack must have one."""
     name, disp = m[0], m[12]
-    if name in D.GENERIC_NAMES:
-        return D.GENERIC_NAMES[name]
-    return [disp or name] * len(LANGS)
+    if name not in ZH.MOVES:
+        sys.exit('no Chinese name for attack %s -- add it to tools/zh_names.py' % name)
+    latin = D.GENERIC_NAMES[name] if name in D.GENERIC_NAMES else [disp or name] * 6
+    return list(latin) + [ZH.MOVES[name]]
 
 
 def main():
@@ -41,8 +45,10 @@ def main():
             sys.exit('%s: power 0' % name)
         if (eff == D.EF_STAGE) != bool(mask):
             sys.exit('%s: EF_STAGE and statMask disagree' % name)
-        for v in localized(m):
-            if not v.isascii() or len(v) > 23:
+        for lang, v in zip(LANGS, localized(m)):
+            # display columns: a CJK character is two (see tcols() in i18n.cpp)
+            cols = sum(2 if ord(c) > 0x7F else 1 for c in v)
+            if (lang != 'ZH' and not v.isascii()) or cols > 23:
                 sys.exit('%s: bad localized name %r' % (name, v))
     assert D.MOVES[-1][0] == 'STRUGGLE', 'STRUGGLE stays last: it is the fallback'
 
@@ -140,7 +146,7 @@ def main():
       '  return LEARN_TBL[LEARN_OFS[dex] + i].level;\n'
       '}\n')
     root = os.path.join(os.path.dirname(__file__), '..')
-    open(os.path.join(root, 'moves.h'), 'w').write(''.join(o))
+    open(os.path.join(root, 'moves.h'), 'w', encoding='utf-8').write(''.join(o))
 
     def cstr(v):
         return v.replace('\\', '\\\\').replace('"', '\\"')
@@ -154,7 +160,7 @@ def main():
             n.append('    "%s",  // %d %s\n' % (cstr(localized(m)[li]), i, ident(m[0])))
         n.append('  },\n')
     n.append('};\n')
-    open(os.path.join(root, 'move_names.h'), 'w').write(''.join(n))
+    open(os.path.join(root, 'move_names.h'), 'w', encoding='utf-8').write(''.join(n))
     print('attacks: %d, learnset rows: %d' % (len(D.MOVES), len(flat)))
 
 

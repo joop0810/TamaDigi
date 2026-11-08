@@ -15,6 +15,15 @@ TamaDigi replaces every Pokémon-specific part of that engine — data, rules, a
 music and text — with Digimon content and V-Pet rules. Everything it inherited is
 used under the MIT licence.
 
+## Chinese
+
+The simplified Chinese UI is drawn with glyphs from **Fusion Pixel 12px** by
+**TakWolf** ([TakWolf/fusion-pixel-font](https://github.com/TakWolf/fusion-pixel-font)),
+under the **SIL Open Font License 1.1** (`tools/fonts/fusion-pixel-OFL.txt`). Only
+the characters the game uses are rendered into `cjk_font.h` as bitmaps. The
+translation has not been proofread by a native speaker; corrections to
+`tools/zh_names.py` and the ZH row of `i18n.cpp` are welcome.
+
 ## Digimon
 
 **Digimon**, all Digimon names and the V-Pet artwork are © **Bandai / Toei

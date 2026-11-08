@@ -5,6 +5,7 @@
 #include "Arduino_GFX_Library.h"
 #include "Preferences.h"
 #include "pet.h"
+#include "i18n.h"
 #include "party.h"
 #include "battle.h"
 #include <chrono>
@@ -171,8 +172,11 @@ static void writePPM(const char *path) {
   printf("wrote %s\n", path);
 }
 
+static int shotLangArg = -1;
+extern uint32_t gTextBroken;
 static int shotMode(const char *screen, const char *out, int lvl, int iv, int dex) {
   setup();
+  if (shotLangArg >= 0 && shotLangArg < LANG_COUNT) gLang = (Lang)shotLangArg;
   for (int i = 0; i < 4; i++) loop();          // let the sketch settle
   bool firstBoot = !strcmp(screen, "starter") || !strcmp(screen, "starterj") ||
                    !strcmp(screen, "region");
@@ -363,7 +367,10 @@ static int shotMode(const char *screen, const char *out, int lvl, int iv, int de
   }
   render();
   writePPM(out);
-  return 0;
+  // text the canvas could not draw as written (a cut UTF-8 sequence, a glyph
+  // the CJK font lacks): the --lang sweep in zh_shots.sh fails on any
+  if (gTextBroken) fprintf(stderr, "text: %u broken on '%s'\n", (unsigned)gTextBroken, screen);
+  return gTextBroken ? 3 : 0;
 }
 
 int main(int argc, char **argv) {
@@ -372,7 +379,7 @@ int main(int argc, char **argv) {
   const char *save = "tamadigi.nvs";
   const char *shot = nullptr, *shotOut = "shot.ppm";
   const char *wav = nullptr, *demo = nullptr;
-  int shotLvl = 0, shotIv = -1, shotDex = 5;
+  int shotLvl = 0, shotIv = -1, shotDex = 5, shotLang = -1;
   for (int i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "--scale") && i + 1 < argc) scale = atoi(argv[++i]);
     else if (!strcmp(argv[i], "--fast") && i + 1 < argc) emuSetTimeScale(atoi(argv[++i]));
@@ -384,6 +391,8 @@ int main(int argc, char **argv) {
     else if (!strcmp(argv[i], "--lvl") && i + 1 < argc) shotLvl = atoi(argv[++i]);
     else if (!strcmp(argv[i], "--iv") && i + 1 < argc) shotIv = atoi(argv[++i]);
     else if (!strcmp(argv[i], "--dex") && i + 1 < argc) shotDex = atoi(argv[++i]);
+    // the UI language for a shot (index into Lang; 6 = Chinese)
+    else if (!strcmp(argv[i], "--lang") && i + 1 < argc) shotLang = atoi(argv[++i]);
     else if (!strcmp(argv[i], "--sprites") && i + 1 < argc) emuSetSpriteDir(argv[++i]);
     else if (!strcmp(argv[i], "--wipe")) { remove(save); }
   }
@@ -393,6 +402,7 @@ int main(int argc, char **argv) {
   gEmuDebug = true;
   // Audio preview: no SDL, no board -- just a file you can listen to.
   if (wav) return wavMain(wav, demo);
+  shotLangArg = shotLang;
   if (shot) return shotMode(shot, shotOut, shotLvl, shotIv, shotDex);   // headless: no SDL at all
   g_crashFile = std::string(save) + ".crash";
   crashRestore();     // a simulated panic left its breadcrumb here

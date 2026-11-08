@@ -30,9 +30,11 @@ public:
   int16_t _w, _h;
   Arduino_CO5300 *_panel;
   std::vector<uint16_t> fb;
-  int16_t cx = 0, cy = 0;
-  uint16_t textColor = 0xFFFF;
-  uint8_t textSize = 1;
+  // Named as in the real Arduino_GFX (protected there), so a subclass in the
+  // sketch -- the UTF-8 / CJK text canvas -- compiles against both.
+  int16_t cursor_x = 0, cursor_y = 0;
+  uint16_t textcolor = 0xFFFF;
+  uint8_t textsize_x = 1;
   volatile bool frameReady = false;
 
   Arduino_Canvas(int16_t w, int16_t h, Arduino_CO5300 *p)
@@ -137,23 +139,29 @@ public:
   }
 
   // --- text: the classic 5x7 glyphs, 6*size advance, same as Adafruit_GFX ---
-  void setTextColor(uint16_t c) { textColor = c; }
-  void setTextSize(uint8_t s) { textSize = s ? s : 1; }
-  void setCursor(int16_t x, int16_t y) { cx = x; cy = y; }
+  void setTextColor(uint16_t c) { textcolor = c; }
+  void setTextSize(uint8_t s) { textsize_x = s ? s : 1; }
+  void setCursor(int16_t x, int16_t y) { cursor_x = x; cursor_y = y; }
+  int16_t getCursorX() const { return cursor_x; }
+  int16_t getCursorY() const { return cursor_y; }
 
   void drawChar(char ch, int x, int y) {
     const uint8_t *g = GLCD_FONT + (uint8_t)ch * 5;
     for (int i = 0; i < 5; i++) {
       uint8_t line = g[i];
       for (int j = 0; j < 8; j++, line >>= 1)
-        if (line & 1) fillRect(x + i * textSize, y + j * textSize, textSize, textSize, textColor);
+        if (line & 1) fillRect(x + i * textsize_x, y + j * textsize_x, textsize_x, textsize_x, textcolor);
     }
   }
-  void print(char ch) {
-    if (ch == '\n') { cy += 8 * textSize; cx = 0; return; }
-    drawChar(ch, cx, cy);
-    cx += 6 * textSize;
+  // As in the real library: print() goes through the virtual write(), one byte
+  // at a time, so a subclass sees every byte.
+  virtual size_t write(uint8_t ch) {
+    if (ch == '\n') { cursor_y += 8 * textsize_x; cursor_x = 0; return 1; }
+    drawChar((char)ch, cursor_x, cursor_y);
+    cursor_x += 6 * textsize_x;
+    return 1;
   }
+  void print(char ch) { write((uint8_t)ch); }
   void print(const char *s) { while (*s) print(*s++); }
   template <typename... A> void printf(const char *f, A... a) {
     char buf[256];

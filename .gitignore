@@ -57,3 +57,4 @@ tools/emu/tamadigi-emu
 tools/emu/sketch.cpp
 tools/emu/proto.h
 web/firmware/
+tools/fonts/.fusion12.ttf

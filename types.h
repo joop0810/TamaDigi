@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include "dex.h"
+#include "i18n.h"   // L(): the Chinese element/attribute names
 
 // Type effectiveness helpers. The chart itself (TYPE_FX) and the PkType enum
 // are generated into dex.h by tools/gen_dex.py from tools/dex_types.py.
@@ -44,10 +45,10 @@ static inline bool hasStab(int16_t dex, uint8_t moveType) {
 // GENERATED into dex.h (ELEMENT_NAME, TYPE_COL, TYPE_COL_LIGHT, ATTR_NAME) from
 // tools/digimon_data.py, so a new element cannot be missing a colour.
 static inline const char *typeName(uint8_t t) {
-  return (t < TYPE_COUNT) ? ELEMENT_NAME[t] : "?";
+  return (t < TYPE_COUNT) ? L(ELEMENT_NAME[t]) : "?";
 }
 static inline const char *attrName(uint8_t a) {
-  return (a < ATTR_COUNT) ? ATTR_NAME[a] : "?";
+  return (a < ATTR_COUNT) ? L(ATTR_NAME[a]) : "?";
 }
 
 static inline uint16_t typeColor(uint8_t t) {
